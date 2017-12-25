@@ -16,6 +16,11 @@ class ViewController: NSViewController {
     @IBOutlet weak var noFilesMessage: NSTextField!
     @IBOutlet weak var removeFilesButton: NSButton!
     @IBOutlet weak var infoLabel: NSTextField!
+    @IBOutlet weak var hashRadioButton: NSButton!
+    @IBOutlet weak var zipRadioButton: NSButton!
+    @IBOutlet weak var zipNameTextField: NSTextField!
+    @IBOutlet weak var removeOriginalCheckbox: NSButton!
+    @IBOutlet weak var startOperationButton: NSButton!
     
     @IBAction func addFilesClicked(_ sender: Any) {
         guard let window = view.window else { return }
@@ -50,6 +55,11 @@ class ViewController: NSViewController {
     
     @IBAction func deselectAllClicked(_ sender: Any) {
         tableView.deselectAll(nil)
+    }
+    
+    @IBAction func radioButtonChanged(_ sender: AnyObject) {
+        zipNameTextField.isEnabled = (zipRadioButton.state == .on)
+        removeOriginalCheckbox.isEnabled = (zipRadioButton.state == .on)
     }
     
     override func viewDidLoad() {

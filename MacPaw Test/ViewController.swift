@@ -39,7 +39,7 @@ class ViewController: NSViewController {
                     }
                     self.files.appendFile(url: url)
                 }
-                self.reloadTableData()
+                self.reloadTableData(needSorting: true)
             }
         }
     }

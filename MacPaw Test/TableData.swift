@@ -1,61 +1,68 @@
 
 import Cocoa
 
+// Everything conserning table data output
 extension ViewController: NSTableViewDelegate, NSTableViewDataSource {
-    
-    fileprivate enum CellIdentifiers {
-        static let SelectCellID = "SelectCellID"
-        static let NameCell = "NameCellID"
-        static let SizeCell = "SizeCellID"
-        static let CreatedCell = "CreatedCellID"
-        static let ModifiedCell = "ModifiedCellID"
-        static let HashCell = "HashCellID"
-    }
     
     func numberOfRows(in tableView: NSTableView) -> Int {
         return files.allFiles.count
     }
     
     func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
-    
+        // A dictionary of column's and their respective cell's IDs
+        // Previously set in storyboard
+        let columnToCellIds = [
+            "NameColumnID": "NameCellID",
+            "SizeColumnID": "SizeCellID",
+            "CreatedColumnID": "CreatedCellID",
+            "ModifiedColumnID": "ModifiedCellID",
+            "HashColumnID": "HashCellID"
+        ]
         var image: NSImage?
         var text: String = ""
-        var cellIdentifier: String = ""
         
         let item = files.allFiles[row]
+        guard let tableColumn = tableColumn else { return nil }
+        let columnId = tableColumn.identifier.rawValue
         
-        if tableColumn == tableView.tableColumns[0] {
+        switch columnId {
+        case "NameColumnID":
             text = item.name
             image = item.icon
-            cellIdentifier = CellIdentifiers.NameCell
-        } else if tableColumn == tableView.tableColumns[1] {
+        case "SizeColumnID":
             text = item.sizeString
-            cellIdentifier = CellIdentifiers.SizeCell
-        } else if tableColumn == tableView.tableColumns[2] {
+        case "CreatedColumnID":
             text = item.createdString
-            cellIdentifier = CellIdentifiers.CreatedCell
-        } else if tableColumn == tableView.tableColumns[3] {
+        case "ModifiedColumnID":
             text = item.modifiedString
-            cellIdentifier = CellIdentifiers.ModifiedCell
-        } else if tableColumn == tableView.tableColumns[4] {
+        case "HashColumnID":
             text = item.hash
-            cellIdentifier = CellIdentifiers.HashCell
+        default:
+            return nil
         }
         
-        if let cell = tableView.makeView(withIdentifier: NSUserInterfaceItemIdentifier(rawValue: cellIdentifier), owner: nil) as? NSTableCellView {
+        // Create a table cell view with the data we defined
+        // It's safe to unwrap the identifier due to the fact that we checked columnId just now
+        if let cell = tableView.makeView(withIdentifier: NSUserInterfaceItemIdentifier(rawValue: columnToCellIds[columnId]!), owner: nil) as? NSTableCellView {
+            // Fill it with data
             cell.textField?.stringValue = text
             cell.imageView?.image = image ?? nil
+            
+            // A bit of customization
             cell.wantsLayer = true
             cell.layer?.backgroundColor = (row % 2 == 0) ? CGColor(gray: 1, alpha: 0.05) : CGColor.clear
+            
             return cell
         }
         return nil
     }
     
+    // Table's sorting has changed, sort the data and reload the table
     func tableView(_ tableView: NSTableView, sortDescriptorsDidChange oldDescriptors: [NSSortDescriptor]) {
         reloadTableData(needSorting: true)
     }
     
+    // Update number of selected items below the table
     func tableViewSelectionDidChange(_ notification: Notification) {
         updateUI()
     }

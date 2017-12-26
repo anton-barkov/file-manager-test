@@ -159,7 +159,7 @@
                                                             <color key="backgroundColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.59999999999999998" alpha="0.0" colorSpace="deviceRGB"/>
                                                             <color key="gridColor" red="1" green="1" blue="1" alpha="0.0" colorSpace="calibratedRGB"/>
                                                             <tableColumns>
-                                                                <tableColumn identifier="" width="169" minWidth="40" maxWidth="1000" id="W3l-rx-YTd">
+                                                                <tableColumn identifier="NameColumnID" width="169" minWidth="40" maxWidth="1000" id="W3l-rx-YTd">
                                                                     <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Name">
                                                                         <font key="font" metaFont="smallSystem"/>
                                                                         <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -208,7 +208,7 @@
                                                                         </tableCellView>
                                                                     </prototypeCellViews>
                                                                 </tableColumn>
-                                                                <tableColumn identifier="" width="86" minWidth="10" maxWidth="3.4028234663852886e+38" id="VK0-9E-UZq">
+                                                                <tableColumn identifier="SizeColumnID" width="86" minWidth="10" maxWidth="3.4028234663852886e+38" id="VK0-9E-UZq">
                                                                     <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Size">
                                                                         <font key="font" metaFont="smallSystem"/>
                                                                         <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -246,7 +246,7 @@
                                                                         </tableCellView>
                                                                     </prototypeCellViews>
                                                                 </tableColumn>
-                                                                <tableColumn identifier="" width="148" minWidth="10" maxWidth="3.4028234663852886e+38" id="MyK-EJ-hhN">
+                                                                <tableColumn identifier="CreatedColumnID" width="148" minWidth="10" maxWidth="3.4028234663852886e+38" id="MyK-EJ-hhN">
                                                                     <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Created">
                                                                         <font key="font" metaFont="smallSystem"/>
                                                                         <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -284,7 +284,7 @@
                                                                         </tableCellView>
                                                                     </prototypeCellViews>
                                                                 </tableColumn>
-                                                                <tableColumn identifier="" width="163" minWidth="10" maxWidth="3.4028234663852886e+38" id="dLH-Xp-CfH">
+                                                                <tableColumn identifier="ModifiedColumnID" width="163" minWidth="10" maxWidth="3.4028234663852886e+38" id="dLH-Xp-CfH">
                                                                     <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Last modified">
                                                                         <font key="font" metaFont="smallSystem"/>
                                                                         <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -322,7 +322,7 @@
                                                                         </tableCellView>
                                                                     </prototypeCellViews>
                                                                 </tableColumn>
-                                                                <tableColumn identifier="" width="276" minWidth="10" maxWidth="3.4028234663852886e+38" id="Ag3-tN-fhw">
+                                                                <tableColumn identifier="HashColumnID" width="276" minWidth="10" maxWidth="3.4028234663852886e+38" id="Ag3-tN-fhw">
                                                                     <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="MD5 hash">
                                                                         <font key="font" metaFont="smallSystem"/>
                                                                         <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>

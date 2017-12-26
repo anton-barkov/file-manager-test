@@ -13,6 +13,7 @@
 		2FC4CFC21FEBFBD000494551 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FC4CFC11FEBFBD000494551 /* ViewController.swift */; };
 		2FC4CFC41FEBFBD000494551 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2FC4CFC31FEBFBD000494551 /* Assets.xcassets */; };
 		2FC4CFC71FEBFBD000494551 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2FC4CFC51FEBFBD000494551 /* Main.storyboard */; };
+		BD596EE5001CAE6BDDE58FC0 /* Pods_MacPaw_Test.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 92576A988BAB0DAE340F1423 /* Pods_MacPaw_Test.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -25,6 +26,9 @@
 		2FC4CFC61FEBFBD000494551 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		2FC4CFC81FEBFBD000494551 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2FC4CFC91FEBFBD000494551 /* MacPaw_Test.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MacPaw_Test.entitlements; sourceTree = "<group>"; };
+		4E21E9A67105D82250DF5653 /* Pods-MacPaw Test.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MacPaw Test.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MacPaw Test/Pods-MacPaw Test.debug.xcconfig"; sourceTree = "<group>"; };
+		92576A988BAB0DAE340F1423 /* Pods_MacPaw_Test.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MacPaw_Test.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		CD5E661A330F2EBBDA76A76C /* Pods-MacPaw Test.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MacPaw Test.release.xcconfig"; path = "Pods/Target Support Files/Pods-MacPaw Test/Pods-MacPaw Test.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -32,17 +36,28 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BD596EE5001CAE6BDDE58FC0 /* Pods_MacPaw_Test.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1869C067D8DE498E4F2D4BEA /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				92576A988BAB0DAE340F1423 /* Pods_MacPaw_Test.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		2FC4CFB31FEBFBD000494551 = {
 			isa = PBXGroup;
 			children = (
 				2FC4CFBE1FEBFBD000494551 /* MacPaw Test */,
 				2FC4CFBD1FEBFBD000494551 /* Products */,
+				E244840B093306405DE9E445 /* Pods */,
+				1869C067D8DE498E4F2D4BEA /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -69,6 +84,15 @@
 			path = "MacPaw Test";
 			sourceTree = "<group>";
 		};
+		E244840B093306405DE9E445 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				4E21E9A67105D82250DF5653 /* Pods-MacPaw Test.debug.xcconfig */,
+				CD5E661A330F2EBBDA76A76C /* Pods-MacPaw Test.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -76,9 +100,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 2FC4CFCC1FEBFBD000494551 /* Build configuration list for PBXNativeTarget "MacPaw Test" */;
 			buildPhases = (
+				9034E240EF954A8DCA0BB796 /* [CP] Check Pods Manifest.lock */,
 				2FC4CFB81FEBFBD000494551 /* Sources */,
 				2FC4CFB91FEBFBD000494551 /* Frameworks */,
 				2FC4CFBA1FEBFBD000494551 /* Resources */,
+				B56A5F8B7ED611BB71984993 /* [CP] Embed Pods Frameworks */,
+				EBFDBC7EE5F0979CF4457C55 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -134,6 +161,60 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		9034E240EF954A8DCA0BB796 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-MacPaw Test-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		B56A5F8B7ED611BB71984993 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-MacPaw Test/Pods-MacPaw Test-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/Zip/Zip.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Zip.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-MacPaw Test/Pods-MacPaw Test-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		EBFDBC7EE5F0979CF4457C55 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-MacPaw Test/Pods-MacPaw Test-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		2FC4CFB81FEBFBD000494551 /* Sources */ = {
@@ -269,6 +350,7 @@
 		};
 		2FC4CFCD1FEBFBD000494551 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 4E21E9A67105D82250DF5653 /* Pods-MacPaw Test.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
@@ -283,6 +365,7 @@
 		};
 		2FC4CFCE1FEBFBD000494551 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = CD5E661A330F2EBBDA76A76C /* Pods-MacPaw Test.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;

@@ -7,6 +7,7 @@
 //
 
 import Cocoa
+import Zip
 
 class Files: NSObject {
     
@@ -90,4 +91,28 @@ class Files: NSObject {
             return
         }
     }
+    
+    private func getAllUrls() -> [URL] {
+        var urls = [URL]()
+        for file in files {
+            urls.append(file.url)
+        }
+        return urls
+    }
+    
+    public func zipAllFiles(acrchiveName: String, progressStatus: @escaping (Double) -> ()) {
+        let desktopPath = FileManager.default.urls(for: .desktopDirectory, in: .userDomainMask)[0]
+        DispatchQueue.global(qos: .userInitiated).async {
+            do {
+                try Zip.zipFiles(paths: self.getAllUrls(), zipFilePath: desktopPath.appendingPathComponent("\(acrchiveName).zip"), password: nil, progress: { (progress) in
+                    DispatchQueue.main.async {
+                        progressStatus(progress)
+                    }
+                })
+            } catch {
+                print(error)
+            }
+        }
+    }
+
 }

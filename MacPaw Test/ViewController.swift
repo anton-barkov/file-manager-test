@@ -19,8 +19,8 @@ class ViewController: NSViewController {
     @IBOutlet weak var hashRadioButton: NSButton!
     @IBOutlet weak var zipRadioButton: NSButton!
     @IBOutlet weak var zipNameTextField: NSTextField!
-    @IBOutlet weak var removeOriginalCheckbox: NSButton!
     @IBOutlet weak var startOperationButton: NSButton!
+    @IBOutlet weak var progressIndicator: NSProgressIndicator!
     
     @IBAction func addFilesClicked(_ sender: Any) {
         guard let window = view.window else { return }
@@ -59,7 +59,26 @@ class ViewController: NSViewController {
     
     @IBAction func radioButtonChanged(_ sender: AnyObject) {
         zipNameTextField.isEnabled = (zipRadioButton.state == .on)
-        removeOriginalCheckbox.isEnabled = (zipRadioButton.state == .on)
+    }
+    
+    @IBAction func startOperationClicked(_ sender: Any) {
+        startOperationButton.isEnabled = false
+        progressIndicator.isIndeterminate = true
+        progressIndicator.startAnimation(nil)
+        if(zipRadioButton.state == .on) {
+            let fileName = (zipNameTextField.stringValue == "") ? "Test archive" : zipNameTextField.stringValue
+            files.zipAllFiles(acrchiveName: fileName, progressStatus: { progress in
+                print(progress)
+                self.progressIndicator.isIndeterminate = false
+                self.progressIndicator.doubleValue = progress
+                if (progress == 1.0) {
+                    self.startOperationButton.isEnabled = true
+                    self.progressIndicator.doubleValue = 0
+                }
+            })
+        } else if(hashRadioButton.state == .on) {
+            
+        }
     }
     
     override func viewDidLoad() {
@@ -80,15 +99,10 @@ class ViewController: NSViewController {
     func updateUI() {
         let totalFilesCount = files.allFiles.count
         let selectedFilesCount = tableView.selectedRowIndexes.count
-        let disableWhenNothingSelected = [removeFilesButton]
-        let hideWhenFilesSelected = [noFilesMessage]
         
-        for object in disableWhenNothingSelected {
-            object?.isEnabled = (selectedFilesCount > 0)
-        }
-        for object in hideWhenFilesSelected {
-            object?.isHidden = (totalFilesCount > 0)
-        }
+        noFilesMessage.isHidden = (totalFilesCount > 0)
+        startOperationButton.isEnabled = (totalFilesCount > 0)
+        removeFilesButton.isEnabled = (selectedFilesCount > 0)
         
         infoLabel.stringValue = "\(totalFilesCount) files total, \(selectedFilesCount) selected"
     }

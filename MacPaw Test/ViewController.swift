@@ -68,16 +68,22 @@ class ViewController: NSViewController {
         if(zipRadioButton.state == .on) {
             let fileName = (zipNameTextField.stringValue == "") ? "Test archive" : zipNameTextField.stringValue
             files.zipAllFiles(acrchiveName: fileName, progressStatus: { progress in
-                print(progress)
-                self.progressIndicator.isIndeterminate = false
-                self.progressIndicator.doubleValue = progress
-                if (progress == 1.0) {
-                    self.startOperationButton.isEnabled = true
-                    self.progressIndicator.doubleValue = 0
-                }
+                updateProgress(progress: progress)
             })
         } else if(hashRadioButton.state == .on) {
-            
+            files.countAllHashes(progressStatus: { progress in
+                updateProgress(progress: progress)
+                self.tableView.reloadData()
+            })
+        }
+        
+        func updateProgress(progress: Double) {
+            progressIndicator.isIndeterminate = false
+            progressIndicator.doubleValue = progress
+            if (progress >= 1.0) {
+                startOperationButton.isEnabled = true
+                progressIndicator.doubleValue = 0
+            }
         }
     }
     

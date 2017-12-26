@@ -114,5 +114,63 @@ class Files: NSObject {
             }
         }
     }
-
+    
+    public func countAllHashes(progressStatus: @escaping (Double) -> ()) {
+        DispatchQueue.global(qos: .userInitiated).async {
+            var index = 0
+            while index < self.files.count {
+                if let hash = self.md5(url: self.files[index].url) {
+                    self.files[index].hash = hash
+                    DispatchQueue.main.async {
+                        print(index)
+                        print(self.files.count)
+                        progressStatus(Double(index) / Double(self.files.count))
+                    }
+                }
+                index += 1
+            }
+        }
+    }
+    
+    private func md5(url: URL) -> String? {
+        let bufferSize = 1024 * 1024
+        
+        do {
+            // Open file for reading:
+            let file = try FileHandle(forReadingFrom: url)
+            defer {
+                file.closeFile()
+            }
+            
+            // Create and initialize MD5 context:
+            var context = CC_MD5_CTX()
+            CC_MD5_Init(&context)
+            
+            // Read up to `bufferSize` bytes, until EOF is reached, and update MD5 context:
+            while autoreleasepool(invoking: {
+                let data = file.readData(ofLength: bufferSize)
+                if data.count > 0 {
+                    data.withUnsafeBytes {
+                        _ = CC_MD5_Update(&context, $0, numericCast(data.count))
+                    }
+                    return true // Continue
+                } else {
+                    return false // End of file
+                }
+            }) { }
+            
+            // Compute the MD5 digest:
+            var digest = Data(count: Int(CC_MD5_DIGEST_LENGTH))
+            digest.withUnsafeMutableBytes {
+                _ = CC_MD5_Final($0, &context)
+            }
+            
+            let hexDigest = digest.map { String(format: "%02hhx", $0) }.joined()
+            return hexDigest
+            
+        } catch {
+            print("Cannot open file:", error.localizedDescription)
+            return nil
+        }
+    }
 }

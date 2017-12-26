@@ -19,6 +19,7 @@
 /* Begin PBXFileReference section */
 		2F695F251FEF31C30084C6E2 /* Files.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Files.swift; sourceTree = "<group>"; };
 		2F695F271FEFC7770084C6E2 /* TableData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableData.swift; sourceTree = "<group>"; };
+		2F8A58521FF2D6830064949E /* MacPaw Test-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MacPaw Test-Bridging-Header.h"; sourceTree = "<group>"; };
 		2FC4CFBC1FEBFBD000494551 /* MacPaw Test.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "MacPaw Test.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2FC4CFBF1FEBFBD000494551 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		2FC4CFC11FEBFBD000494551 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -80,6 +81,7 @@
 				2FC4CFC51FEBFBD000494551 /* Main.storyboard */,
 				2FC4CFC81FEBFBD000494551 /* Info.plist */,
 				2FC4CFC91FEBFBD000494551 /* MacPaw_Test.entitlements */,
+				2F8A58521FF2D6830064949E /* MacPaw Test-Bridging-Header.h */,
 			);
 			path = "MacPaw Test";
 			sourceTree = "<group>";
@@ -128,6 +130,7 @@
 				TargetAttributes = {
 					2FC4CFBB1FEBFBD000494551 = {
 						CreatedOnToolsVersion = 9.2;
+						LastSwiftMigration = 0920;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -353,12 +356,15 @@
 			baseConfigurationReference = 4E21E9A67105D82250DF5653 /* Pods-MacPaw Test.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = "MacPaw Test/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.barkov.MacPaw-Test";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "MacPaw Test/MacPaw Test-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.0;
 			};
 			name = Debug;
@@ -368,12 +374,14 @@
 			baseConfigurationReference = CD5E661A330F2EBBDA76A76C /* Pods-MacPaw Test.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = "MacPaw Test/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.barkov.MacPaw-Test";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "MacPaw Test/MacPaw Test-Bridging-Header.h";
 				SWIFT_VERSION = 4.0;
 			};
 			name = Release;

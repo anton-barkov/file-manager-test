@@ -78,9 +78,10 @@ class ViewController: NSViewController {
         }
         
         func updateProgress(progress: Double) {
-            progressIndicator.isIndeterminate = false
-            progressIndicator.doubleValue = progress
-            if (progress >= 1.0) {
+            if (progress < 1.0) {
+                progressIndicator.isIndeterminate = false
+                progressIndicator.doubleValue = progress
+            } else {
                 startOperationButton.isEnabled = true
                 progressIndicator.doubleValue = 0
             }

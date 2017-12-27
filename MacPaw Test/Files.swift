@@ -16,6 +16,7 @@ class Files: NSObject {
     }()
     
     struct File {
+        var localId: Int
         var url: URL
         var icon: NSImage
         var name: String
@@ -27,10 +28,54 @@ class Files: NSObject {
         var modifiedDate: Date
         var hash: String
     }
+    
+    private var previousLocalId: Int = 0
+    
     private var files = [File]()
     
     public var allFiles: [File] {
         return files
+    }
+    
+    private var sortedToOriginalIndexes = [Int: Int]()
+    
+    /**
+        Creates a copy of files array and returns it sorted in descripted way.
+     
+        The idea is to keep the original array of files untouched and remember their corresponding indexes
+        in both arrays. Sorting gets a little bit heavier for the CPU, but this way it won't break
+        any operations that may run concurrently on files data by changing their order.
+     
+        - Parameter field: The type of data by which to sort.
+        - Parameter ascending: Sort direction, `true` for ascending.
+     
+        - Returns: `File` array, sorted by description.
+     */
+    public func getSortedFiles(field: String, ascending: Bool) -> [File] {
+        var sortedFiles = [File]()
+        switch field {
+        case "name":     sortedFiles = files.sorted { ascending ? $0.name < $1.name : $0.name > $1.name }
+        case "size":     sortedFiles = files.sorted { ascending ? $0.sizeInt < $1.sizeInt : $0.sizeInt > $1.sizeInt }
+        case "created":  sortedFiles = files.sorted { ascending ? $0.createdDate < $1.createdDate : $0.createdDate > $1.createdDate }
+        case "modified": sortedFiles = files.sorted { ascending ? $0.modifiedDate < $1.modifiedDate : $0.modifiedDate > $1.modifiedDate }
+        case "hash":     sortedFiles = files.sorted { ascending ? $0.hash < $1.hash : $0.hash > $1.hash }
+        default:
+            return []
+        }
+        
+        // Find original indexes of corresponding files in the new sorted array
+        // This operation is quite heavy when done on the main thread with lots of files, move it to background
+        DispatchQueue.global(qos: .utility).async {
+            for sortedIndex in 0...sortedFiles.count - 1 {
+                guard let originalIndex = self.files.index(where: { (file) -> Bool in
+                    file.localId == sortedFiles[sortedIndex].localId
+                }) else { return }
+                self.sortedToOriginalIndexes.updateValue(originalIndex, forKey: sortedIndex)
+            }
+        }
+        
+        
+        return sortedFiles
     }
     
     public func appendFile(url: URL) {
@@ -57,6 +102,7 @@ class Files: NSObject {
             let sizeString = sizeFormatter.string(fromByteCount: sizeInt)
 
             self.files.append(File(
+                localId: previousLocalId + 1,
                 url: url,
                 icon: NSWorkspace.shared.icon(forFile: url.path),
                 name: url.lastPathComponent,
@@ -68,6 +114,8 @@ class Files: NSObject {
                 modifiedDate: modifiedDate,
                 hash: "-"
             ))
+            
+            previousLocalId += 1
 
         } catch {
             print("Failed to get file info: \(url)")
@@ -76,19 +124,15 @@ class Files: NSObject {
     
     public func removeFiles(atIndexes: IndexSet) {
         for index in atIndexes.reversed() {
-            files.remove(at: index)
-        }
-    }
-    
-    public func sortData(field: String, ascending: Bool) {
-        switch field {
-        case "name":     files.sort { ascending ? $0.name < $1.name : $0.name > $1.name }
-        case "size":     files.sort { ascending ? $0.sizeInt < $1.sizeInt : $0.sizeInt > $1.sizeInt }
-        case "created":  files.sort { ascending ? $0.createdDate < $1.createdDate : $0.createdDate > $1.createdDate }
-        case "modified": files.sort { ascending ? $0.modifiedDate < $1.modifiedDate : $0.modifiedDate > $1.modifiedDate }
-        case "hash":     files.sort { ascending ? $0.hash < $1.hash : $0.hash > $1.hash }
-        default:
-            return
+            // Table hasn't been sorted yet, remove file by the same index
+            if sortedToOriginalIndexes.isEmpty {
+                files.remove(at: index)
+            } else {
+                // Table has been sorted, grab the corresponding original index
+                if let originalIndex = sortedToOriginalIndexes[index] {
+                    files.remove(at: originalIndex)
+                }
+            }
         }
     }
     
@@ -118,8 +162,6 @@ class Files: NSObject {
                 if let hash = self.md5(url: self.files[index].url) {
                     self.files[index].hash = hash
                     DispatchQueue.main.async {
-                        print(index)
-                        print(self.files.count)
                         progressStatus(Double(index) / Double(self.files.count))
                     }
                 }

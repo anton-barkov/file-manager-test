@@ -21,10 +21,18 @@ extension ViewController: NSTableViewDelegate, NSTableViewDataSource {
         var image: NSImage?
         var text: String = ""
         
-        let item = files.allFiles[row]
+        // Get all files data, sort it if there's an active sort descriptor
+        var filesData = files.allFiles
+        if let descriptor = tableView.sortDescriptors.first, descriptor.key != nil {
+            filesData = files.getSortedFiles(field: descriptor.key!, ascending: descriptor.ascending)
+        }
+
+        let item = filesData[row]
+        
         guard let tableColumn = tableColumn else { return nil }
         let columnId = tableColumn.identifier.rawValue
         
+        // Define what data to use for each type of cell
         switch columnId {
         case "NameColumnID":
             text = item.name
@@ -59,7 +67,7 @@ extension ViewController: NSTableViewDelegate, NSTableViewDataSource {
     
     // Table's sorting has changed, sort the data and reload the table
     func tableView(_ tableView: NSTableView, sortDescriptorsDidChange oldDescriptors: [NSSortDescriptor]) {
-        reloadTableData(needSorting: true)
+        reloadTableData()
     }
     
     // Update number of selected items below the table

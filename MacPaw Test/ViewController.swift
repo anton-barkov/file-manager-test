@@ -39,7 +39,7 @@ class ViewController: NSViewController {
                     }
                     self.files.appendFile(url: url)
                 }
-                self.reloadTableData(needSorting: true)
+                self.reloadTableData()
             }
         }
     }
@@ -93,12 +93,7 @@ class ViewController: NSViewController {
         updateUI()
     }
     
-    func reloadTableData(needSorting: Bool = false) {
-        if(needSorting) {
-            if let descriptor = tableView.sortDescriptors.first, descriptor.key != nil {
-                files.sortData(field: descriptor.key!, ascending: descriptor.ascending)
-            }
-        }
+    func reloadTableData() {
         tableView.reloadData()
         updateUI()
     }

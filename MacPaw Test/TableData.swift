@@ -1,7 +1,7 @@
 
 import Cocoa
 
-// Everything conserning table data output
+// Everything related to table data output
 extension ViewController: NSTableViewDelegate, NSTableViewDataSource {
     
     func numberOfRows(in tableView: NSTableView) -> Int {
@@ -24,7 +24,7 @@ extension ViewController: NSTableViewDelegate, NSTableViewDataSource {
         // Get all files data, sort it if there's an active sort descriptor
         var filesData = files.allFiles
         if let descriptor = tableView.sortDescriptors.first, descriptor.key != nil {
-            filesData = files.getSortedFiles(field: descriptor.key!, ascending: descriptor.ascending)
+            filesData = files.sortedFiles
         }
 
         let item = filesData[row]
@@ -67,7 +67,7 @@ extension ViewController: NSTableViewDelegate, NSTableViewDataSource {
     
     // Table's sorting has changed, sort the data and reload the table
     func tableView(_ tableView: NSTableView, sortDescriptorsDidChange oldDescriptors: [NSSortDescriptor]) {
-        reloadTableData()
+        reloadTableData(needsSorting: true)
     }
     
     // Update number of selected items below the table

@@ -39,7 +39,7 @@ class ViewController: NSViewController {
                     }
                     self.files.appendFile(url: url)
                 }
-                self.reloadTableData()
+                self.reloadTableData(needsSorting: true)
             }
         }
     }
@@ -66,8 +66,7 @@ class ViewController: NSViewController {
         progressIndicator.isIndeterminate = true
         progressIndicator.startAnimation(nil)
         if(zipRadioButton.state == .on) {
-            let fileName = (zipNameTextField.stringValue == "") ? "Test archive" : zipNameTextField.stringValue
-            files.zipAllFiles(acrchiveName: fileName, progressStatus: { progress in
+            files.zipAllFiles(archiveName: zipNameTextField.stringValue, progressStatus: { progress in
                 updateProgress(progress: progress)
             })
         } else if(hashRadioButton.state == .on) {
@@ -93,7 +92,12 @@ class ViewController: NSViewController {
         updateUI()
     }
     
-    func reloadTableData() {
+    func reloadTableData(needsSorting: Bool = false) {
+        if needsSorting {
+            if let descriptor = tableView.sortDescriptors.first, descriptor.key != nil {
+                files.sortFiles(field: descriptor.key!, ascending: descriptor.ascending)
+            }
+        }
         tableView.reloadData()
         updateUI()
     }

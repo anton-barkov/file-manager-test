@@ -11,10 +11,26 @@ import Zip
 
 class Files: NSObject {
     
+    // Singleton shared instance
     static let shared: Files = {
         return Files()
     }()
     
+    /**
+        File item.
+     
+        - localID: An ID assigned to file after it's been added, used for sorting.
+        - url: System URL of a file.
+        - icon: System file icon.
+        - name: File name with extension.
+        - sizeString: File size formatted for table output.
+        - sizeInt: Raw file size, used for sorting.
+        - createdString: File creation date formatted for table output.
+        - createdDate: Raw file creation date, used for sorting.
+        - modifiedString: File last modification date formatted for table output.
+        - modifiedDate: Raw file last modification date, used for sorting.
+        - hash: File's MD5 hash.
+     */
     struct File {
         var localId: Int
         var url: URL
@@ -29,29 +45,42 @@ class Files: NSObject {
         var hash: String
     }
     
+    // ID of the last appended file
     private var previousLocalId: Int = 0
     
+    // Private array of files data
+    // Stays in its original order all the time, changed only by addition/removal of files
     private var files = [File]()
     
+    // Returns an unsorted array of files
     public var allFiles: [File] {
         return files
     }
     
-    private var sortedToOriginalIndexes = [Int: Int]()
+    // An array of indexes, that describes the order in which table data should be presented
+    private var sortedFilesOrder = [Int]()
+    
+    // Returns an array of sorted files based on the `sortedFilesOrder`
+    public var sortedFiles: [File] {
+        var sortedFiles = [File]()
+        for index in sortedFilesOrder {
+            sortedFiles.append(files[index])
+        }
+        return sortedFiles
+    }
     
     /**
-        Creates a copy of files array and returns it sorted in descripted way.
+        Sorts original array of files according to the description, writes the sorted order of elements to `sortedFilesOrder`.
      
-        The idea is to keep the original array of files untouched and remember their corresponding indexes
-        in both arrays. Sorting gets a little bit heavier for the CPU, but this way it won't break
-        any operations that may run concurrently on files data by changing their order.
+        The idea is to keep the original array of files untouched and use an array of indexes to handle table sorting.
+        This way operations that run concurrently on files data won't break because of elements reordering.
      
         - Parameter field: The type of data by which to sort.
         - Parameter ascending: Sort direction, `true` for ascending.
      
         - Returns: `File` array, sorted by description.
      */
-    public func getSortedFiles(field: String, ascending: Bool) -> [File] {
+    public func sortFiles(field: String, ascending: Bool) {
         var sortedFiles = [File]()
         switch field {
         case "name":     sortedFiles = files.sorted { ascending ? $0.name < $1.name : $0.name > $1.name }
@@ -60,31 +89,29 @@ class Files: NSObject {
         case "modified": sortedFiles = files.sorted { ascending ? $0.modifiedDate < $1.modifiedDate : $0.modifiedDate > $1.modifiedDate }
         case "hash":     sortedFiles = files.sorted { ascending ? $0.hash < $1.hash : $0.hash > $1.hash }
         default:
-            return []
+            return
         }
         
-        // Find original indexes of corresponding files in the new sorted array
-        // This operation is quite heavy when done on the main thread with lots of files, move it to background
-        DispatchQueue.global(qos: .utility).async {
-            for sortedIndex in 0...sortedFiles.count - 1 {
-                guard let originalIndex = self.files.index(where: { (file) -> Bool in
-                    file.localId == sortedFiles[sortedIndex].localId
-                }) else { return }
-                self.sortedToOriginalIndexes.updateValue(originalIndex, forKey: sortedIndex)
-            }
+        sortedFilesOrder = []
+        for sortedIndex in 0...sortedFiles.count - 1 {
+            guard let originalIndex = files.index(where: { (file) -> Bool in
+                file.localId == sortedFiles[sortedIndex].localId
+            }) else { return }
+            self.sortedFilesOrder.append(originalIndex)
         }
-        
-        
-        return sortedFiles
     }
     
+    /**
+        Gets file's info by its URL and appends the data to the main `files` array.
+        - Parameter url: System URL to file's location.
+     */
     public func appendFile(url: URL) {
         let fileManager = FileManager.default
         
         do {
             let attributes = try fileManager.attributesOfItem(atPath: url.path)
 
-            // MARK: Creation/modification date formatting
+            // Creation/modification date formatting
             let dateFormatter = DateFormatter()
             dateFormatter.dateStyle = .short
             dateFormatter.doesRelativeDateFormatting = true
@@ -96,7 +123,7 @@ class Files: NSObject {
             guard let modifiedDate = attributes[FileAttributeKey.modificationDate] as? Date else { return }
             let modifiedString = dateFormatter.string(from: modifiedDate)
 
-            // MARK: File size formatting
+            // File size formatting
             let sizeFormatter = ByteCountFormatter()
             guard let sizeInt = attributes[FileAttributeKey.size] as? Int64 else { return }
             let sizeString = sizeFormatter.string(fromByteCount: sizeInt)
@@ -122,29 +149,56 @@ class Files: NSObject {
         }
     }
     
+    /**
+        Removes files by a set of indexes from table view.
+        - Parameter atIndexes: A set of indexes of selected table view rows.
+     */
     public func removeFiles(atIndexes: IndexSet) {
         for index in atIndexes.reversed() {
-            // Table hasn't been sorted yet, remove file by the same index
-            if sortedToOriginalIndexes.isEmpty {
+            if sortedFilesOrder.isEmpty {
+                // Table hasn't been sorted yet, remove file using the same index
                 files.remove(at: index)
             } else {
                 // Table has been sorted, grab the corresponding original index
-                if let originalIndex = sortedToOriginalIndexes[index] {
-                    files.remove(at: originalIndex)
+                let indexToRemove = sortedFilesOrder[index]
+                files.remove(at: indexToRemove)
+                
+                // Indexes are no longer correct since we removed one of the elements
+                // Get rid of the removed file index
+                sortedFilesOrder.remove(at: index)
+                
+                // Move every element following the removed one down by one position
+                if !sortedFilesOrder.isEmpty {
+                    for i in 0...sortedFilesOrder.count - 1 {
+                        if(sortedFilesOrder[i] > indexToRemove) {
+                            sortedFilesOrder[i] = sortedFilesOrder[i] - 1
+                        }
+                    }
                 }
             }
         }
     }
     
-    public func zipAllFiles(acrchiveName: String, progressStatus: @escaping (Double) -> ()) {
+    /**
+        Adds all files that are currently present in the app to a zip archive and places it on the desktop.
+        - Parameter archiveName: User defined name of the archive.
+        - Parameter progressStatus: Closure that notifies on progress.
+     */
+    public func zipAllFiles(archiveName: String, progressStatus: @escaping (Double) -> ()) {
+        // Get all the file URLs
         var urls = [URL]()
         for file in files {
             urls.append(file.url)
         }
+        
+        // Handle archive file name and path
+        let name = (archiveName == "") ? "test-archive" : archiveName
         let desktopPath = FileManager.default.urls(for: .desktopDirectory, in: .userDomainMask)[0]
+        
+        // Dispatch work to a background thread, notify main thread on progress
         DispatchQueue.global(qos: .userInitiated).async {
             do {
-                try Zip.zipFiles(paths: urls, zipFilePath: desktopPath.appendingPathComponent("\(acrchiveName).zip"), password: nil, progress: { (progress) in
+                try Zip.zipFiles(paths: urls, zipFilePath: desktopPath.appendingPathComponent("\(name).zip"), password: nil, progress: { (progress) in
                     DispatchQueue.main.async {
                         progressStatus(progress)
                     }
@@ -155,6 +209,11 @@ class Files: NSObject {
         }
     }
     
+    
+    /**
+        Calculates MD5 hashes for all files that are currently present in the app.
+        - Parameter progressStatus: Closure that notifies on progress.
+     */
     public func countAllHashes(progressStatus: @escaping (Double) -> ()) {
         DispatchQueue.global(qos: .userInitiated).async {
             var index = 0
@@ -170,6 +229,14 @@ class Files: NSObject {
         }
     }
     
+    /**
+        Calculates MD5 hash for a single file.
+     
+        Courtesy of Martin R from SO.
+     
+        - Parameter url: File URL describing its location in the system.
+        - Returns: String containing MD5 hash of the file.
+     */
     private func md5(url: URL) -> String? {
         let bufferSize = 1024 * 1024
         

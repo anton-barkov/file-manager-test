@@ -7,4 +7,4 @@ using GCD.
 ## Installation
 The app uses [CocoaPods](https://cocoapods.org/).
 
-Just run `podfile install` in the project directory and open `MacPaw Test.xcworkspace`.
+Just run `pod install` in the project directory and open `MacPaw Test.xcworkspace`.

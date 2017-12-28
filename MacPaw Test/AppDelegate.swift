@@ -19,16 +19,5 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // Insert code here to tear down your application
     }
     
-    func application(_ application: NSApplication, open urls: [URL]) {
-        print(urls)
-    }
-    
-    func application(_ sender: NSApplication, openFiles filenames: [String]) {
-        print(filenames)
-    }
-
-    @IBAction func fileOpenAction(_ sender: Any) {
-        print("'called'")
-    }
 }
 
